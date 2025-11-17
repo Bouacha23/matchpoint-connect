@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, MapPin, Users, Plus, Map } from "lucide-react";
+import { Calendar, MapPin, Users, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import MatchMap from "@/components/MatchMap";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -17,7 +15,6 @@ const Home = () => {
       date: "2025-11-20",
       time: "10:00 AM",
       location: "Central Park Field",
-      coordinates: [-0.1276, 51.5074] as [number, number],
       currentPlayers: 8,
       maxPlayers: 10,
     },
@@ -27,7 +24,6 @@ const Home = () => {
       date: "2025-11-21",
       time: "6:00 PM",
       location: "Riverside Sports Complex",
-      coordinates: [-0.1406, 51.5194] as [number, number],
       currentPlayers: 10,
       maxPlayers: 10,
     },
@@ -37,7 +33,6 @@ const Home = () => {
       date: "2025-11-23",
       time: "2:00 PM",
       location: "City Stadium",
-      coordinates: [-0.1186, 51.5074] as [number, number],
       currentPlayers: 5,
       maxPlayers: 12,
     },
@@ -77,85 +72,62 @@ const Home = () => {
           </Button>
         </div>
 
-        {/* Tabs for List and Map View */}
-        <Tabs defaultValue="list" className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="list" className="gap-2">
-              <Users className="h-4 w-4" />
-              List View
-            </TabsTrigger>
-            <TabsTrigger value="map" className="gap-2">
-              <Map className="h-4 w-4" />
-              Map View
-            </TabsTrigger>
-          </TabsList>
+        {/* Filters */}
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          <Button variant="outline" size="sm">All Matches</Button>
+          <Button variant="outline" size="sm">Today</Button>
+          <Button variant="outline" size="sm">This Week</Button>
+          <Button variant="outline" size="sm">Available</Button>
+        </div>
 
-          <TabsContent value="list" className="space-y-6">
-            {/* Filters */}
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              <Button variant="outline" size="sm">All Matches</Button>
-              <Button variant="outline" size="sm">Today</Button>
-              <Button variant="outline" size="sm">This Week</Button>
-              <Button variant="outline" size="sm">Available</Button>
-            </div>
-
-            {/* Matches Grid */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {matches.map((match) => {
-                const isFull = match.currentPlayers >= match.maxPlayers;
-                return (
-                  <Card 
-                    key={match.id} 
-                    className="hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-primary/50"
-                    onClick={() => navigate(`/match/${match.id}`)}
-                  >
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-xl">{match.title}</CardTitle>
-                        {isFull ? (
-                          <Badge variant="secondary">Full</Badge>
-                        ) : (
-                          <Badge className="bg-primary">Open</Badge>
-                        )}
+        {/* Matches Grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {matches.map((match) => {
+            const isFull = match.currentPlayers >= match.maxPlayers;
+            return (
+              <Card 
+                key={match.id} 
+                className="hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-primary/50"
+                onClick={() => navigate(`/match/${match.id}`)}
+              >
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <CardTitle className="text-xl">{match.title}</CardTitle>
+                    {isFull ? (
+                      <Badge variant="secondary">Full</Badge>
+                    ) : (
+                      <Badge className="bg-primary">Open</Badge>
+                    )}
+                  </div>
+                  <CardDescription className="flex items-center gap-2 mt-2">
+                    <MapPin className="h-4 w-4" />
+                    {match.location}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4" />
+                      {match.date} at {match.time}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium">
+                        {match.currentPlayers}/{match.maxPlayers} players
+                      </span>
+                      <div className="flex-1 bg-secondary rounded-full h-2 overflow-hidden">
+                        <div 
+                          className="bg-primary h-full transition-all"
+                          style={{ width: `${(match.currentPlayers / match.maxPlayers) * 100}%` }}
+                        />
                       </div>
-                      <CardDescription className="flex items-center gap-2 mt-2">
-                        <MapPin className="h-4 w-4" />
-                        {match.location}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Calendar className="h-4 w-4" />
-                          {match.date} at {match.time}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-primary" />
-                          <span className="text-sm font-medium">
-                            {match.currentPlayers}/{match.maxPlayers} players
-                          </span>
-                          <div className="flex-1 bg-secondary rounded-full h-2 overflow-hidden">
-                            <div 
-                              className="bg-primary h-full transition-all"
-                              style={{ width: `${(match.currentPlayers / match.maxPlayers) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="map">
-            <MatchMap 
-              matches={matches} 
-              onMarkerClick={(matchId) => navigate(`/match/${matchId}`)}
-            />
-          </TabsContent>
-        </Tabs>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </main>
     </div>
   );
